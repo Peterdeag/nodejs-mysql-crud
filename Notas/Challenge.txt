@@ -1,0 +1,82 @@
+TAREAS REQUERIDAS
+
+REPOSITORIO BASE
+https://github.com/Peterdeag/nodejs-mysql-crud
+
+Esta es una aplicación web sencilla hecha con Node.js y MySQL. Tu trabajo es prepararla para correr en un entorno más cercano a producción.
+
+1. Containerizar la aplicación
+
+El objetivo es que tanto la app como la base de datos corran dentro de contenedores Docker, y que puedan levantarse con un solo comando.
+
+Qué investigar:
+- ¿Qué es Docker y para qué sirve?
+- ¿Qué es un Dockerfile y cómo se construye una imagen?
+- ¿Qué es docker-compose y cómo se definen múltiples servicios?
+- ¿Cómo se pasan variables de entorno a un contenedor sin hardcodear credenciales?
+- Busca: "dockerize node.js mysql app docker-compose example"
+
+---
+
+2. Reverse proxy en el puerto 80
+
+El objetivo es que la app sea accesible en el puerto 80 de tu VM, pero sin exponerla directamente. Un servidor como Nginx actuará como intermediario.
+
+Qué investigar:
+- ¿Qué es un reverse proxy y por qué se usa?
+- ¿Cómo se instala Nginx en Linux?
+- ¿Cómo se configura un "server block" en Nginx para redirigir tráfico a otro puerto?
+- Busca: "nginx reverse proxy node.js port 80 tutorial"
+
+---
+
+3. Pipeline de CI/CD
+
+El objetivo es que cada vez que subas un cambio al repositorio, la app se pruebe y se redespliegue automáticamente, sin que tengas que hacer nada manualmente.
+
+Qué investigar:
+- ¿Qué es Git y cómo funciona? (commits, ramas, push)
+- ¿Qué es GitHub y cómo se hace un fork de un repositorio?
+- ¿Qué es CI/CD (Continuous Integration / Continuous Deployment)?
+- ¿Cómo funcionan los GitHub Actions workflows (.yml)?
+- Busca: "github actions deploy docker container on push tutorial"
+
+---
+
+4. Stack de observabilidad
+
+El objetivo es tener visibilidad de lo que está pasando en tu servidor: cuánta CPU y memoria está usando, y qué peticiones HTTP están llegando o fallando.
+
+Qué investigar:
+- ¿Qué es Prometheus y qué es Node Exporter?
+- ¿Qué es Grafana y cómo se conecta a Prometheus?
+- ¿Cómo se recolectan logs de Nginx con Loki o con ELK?
+- Busca: "grafana prometheus node exporter docker-compose tutorial"
+- Busca: "nginx access logs grafana loki"
+
+---
+
+TAREAS OPCIONALES (puntos extra)
+
+A. Dominio personalizado + HTTPS
+
+Registra un dominio gratuito (DuckDNS es una buena opción) y apúntalo a la IP pública de tu VM. Luego configura HTTPS con un certificado gratuito de Let's Encrypt.
+
+Qué investigar:
+- ¿Qué es DNS y cómo funciona la resolución de nombres?
+- ¿Cómo registrar un subdominio gratuito en duckdns.org?
+- ¿Qué es Let's Encrypt y cómo se usa Certbot con Nginx?
+- Busca: "certbot nginx letsencrypt ubuntu tutorial"
+
+---
+
+DEPENDENCIAS DE LA APP
+- Node.js (LTS)
+- MySQL 5.7
+
+
+ENTREGABLES
+
+Haz un fork del repositorio en GitHub y trabaja en tu propio fork público. 
+Al terminar, compárteme la URL. 
+Tu repositorio debe incluir todos los archivos de configuración que hayas creado, un README.md con instrucciones para reproducir tu setup desde cero en una VM limpia, y capturas de pantalla de tus dashboards de monitoreo.

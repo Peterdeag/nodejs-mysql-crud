@@ -1,0 +1,192 @@
+Containerizar con Docker:
+documentacion:
+https://docs.docker.com/get-started/
+https://docs.docker.com/get-started/docker-overview/
+https://docs.docker.com/reference/compose-file/
+https://hub.docker.com/_/mysql (Documentacion de imagen de MySQL)
+
+El objetivo es que tanto la app como la base de datos corran dentro de contenedores Docker, y que puedan levantarse con un solo comando.
+
+Preguntas:
+¿Qué es Docker y para qué sirve?
+Docker es una plataforma para desarrollar y desplegar aplicaciones que permite separar las aplicaciones
+de la infraestructua. Usa contenizacion (?) un sistema para empaquetar la aplicacion y los servicios 
+que requiera de menera independiente (Tiene cierto paralelo con la virtualizacion)
+Necesario para tener un marco de trabajo fijo para multiples usuarios y desarrolladores (evitar
+situaciones de "En mi maquina si funcionaba")
+
+¿Qué es un Dockerfile y cómo se construye una imagen?
+Es el archivo de instrucciones que lee docker para construir una imagen de docker
+Contiene comando que un usuario puede ejecutar en su terminal, y que estan preparados para
+configurar el ensamble de la imagen
+Para construirla, tienendo la informaicon de la imagen base, el espacio de trabajo, dependencias, puertos, etc;
+Se ejecuta el comando:
+docker build -t [image name] [directory]
+y se puede añadir un punto para indicar que se construira con la carpeta actual
+
+¿Qué es docker-compose y cómo se definen múltiples servicios?
+Docker compose es la herramienta para definir y correr aplicaciones multicontenedor
+Utiliza un archivo docker-compose.yml
+Los servicios se definen con una etiqueta 
+services:
+y puede indicar la imagen del servicio, o su build,
+variables de entorno, dependencias, volumentes que utilza, redes, puertos, entre otros
+En el proyecto utilizo un servicio app y uno de base de datos
+
+services:
+    app:
+    build: .
+    container_name: node-app
+    
+    ...
+
+    paystand-mysql:
+    image: mysql:5.7
+    container_name: paystand-mysql
+    volumes:
+      - ./database:/docker-entrypoint-initdb.d
+    ...
+
+    (Cada uno contiene bastantes mas parametros)
+(Nota: Entre los parametros que utiliza el servicio de MySql, utiliza un volumen /docker-entrypoint-initdb.d
+como punto de carga para migraciones predeterminadas de base de datos, ejecutando los archivos sql presentes)
+
+¿Cómo se pasan variables de entorno a un contenedor sin hardcodear credenciales?
+
+Desde docker-compose.yml se pueden definir variables de entorno dentro de la sección environment.
+Sin embargo, para no escribir credenciales directamente en el archivo, los valores deben colocarse en un archivo .env.
+
+Dentro del archivo .env se definen las variables:
+
+DB_HOST=paystand-mysql
+DB_USER=root
+DB_PASSWORD=******
+DB_NAME=nodejs2
+
+Después, dentro de docker-compose.yml, se hace referencia a esas variables usando ${} y el nombre de la variable:
+
+environment:
+    DB_HOST: ${DB_HOST}
+    DB_USER: ${DB_USER}
+    DB_PASSWORD: ${DB_PASSWORD}
+    DB_NAME: ${DB_NAME}
+
+Dentro de la aplicacion las variables se utilizan con procees.env. seguido del nombre de la variable:
+
+host: process.env.DB_HOST
+user: process.env.DB_USER
+password: process.env.DB_PASSWORD
+database: process.env.DB_NAME
+
+Las variables se asignan desde un archivo de configuracion .env, 
+y en el codigo solo se necesita agregar referencias
+
+https://docs.docker.com/reference/compose-file/services/
+
+Busca: "dockerize node.js mysql app docker-compose example"
+
+Ejemplos:
+https://medium.com/jungletronics/docker-mysql-node-js-app-88f696d837bb
+https://medium.com/@loanvitordias1/dockerize-node-js-express-and-mysql-example-docker-compose-b56011a1dd18
+https://vijayasimhabr.medium.com/running-mysql-database-server-with-docker-ad10533473c7
+https://youtu.be/4Dko5W96WHg?si=u4gp_Z1tM3JoGBo6
+
+
+2. Reverse proxy en el puerto 80
+
+El objetivo es que la app sea accesible en el puerto 80 de tu VM, pero sin exponerla directamente. Un servidor como Nginx actuará como intermediario.
+
+Qué investigar:
+- ¿Qué es un reverse proxy y por qué se usa?
+Un reverse proxy es un servidor intermediario entre el cliente y tu aplicación. El cliente no se conecta directamente a Node.js, sino a Nginx. 
+Nginx recibe las peticiones HTTP y las reenvía internamente a tu aplicación.
+
+- ¿Cómo se instala Nginx en Linux?
+Se puede instalar como un paquete normal de linux, descargandolo desde la pagina oficial, segun la version necesaria
+o tambien puede ser instalado mediante un gestor de paquetes como yum, o apt. Para ubuntu use el siguiente comando:
+sudo apt update
+sudo apt install nginx
+Enlaces de descarga y guia completa de instalacion:
+https://nginx.org/en/linux_packages.html
+
+- ¿Cómo se configura un "server block" en Nginx para redirigir tráfico a otro puerto?
+En server block indica cómo debe responder el servidor ante las solicitudes que llegan a un puerto o dominio específico
+Se crea un archivo de configuración dentro de /etc/nginx/sites-available/, donde se define que Nginx escuche en el puerto 80 
+y reenvíe las peticiones hacia el puerto interno donde está corriendo la aplicación, por ejemplo el puerto 3000 de Node.js
+
+
+- Busca: "nginx reverse proxy node.js port 80 tutorial"
+
+https://nginx.org/en/docs/
+https://youtu.be/B62QSbPhh1s?si=6TjoZFE0GGPlFvpH
+https://cubepath.com/docs/servidores-web/configuracion-de-server-blocks-en-nginx
+https://stackoverflow.com/questions/32113316/how-do-i-setup-nginx-with-a-reverse-proxy-to-port-80-for-two-apps-that-both-need
+
+3. Pipeline de CI/CD
+
+El objetivo es que cada vez que subas un cambio al repositorio, la app se pruebe y se redespliegue automáticamente, sin que tengas que hacer nada manualmente.
+
+Qué investigar:
+- ¿Qué es Git y cómo funciona? (commits, ramas, push)
+Git es un sistema de control de versiones utilizado para gestionar proyectos de software
+Implementa repositorios en los que se permite guardar el estado de los archivos presentes, asi como los cambios realizados entre cada avance
+Permite trabajar de manera colaborativa entre distintos desarrolladores, guardando los cambios acumulativos de cada uno, y permitiendo revisar diferencias
+y comparar cambios contradictorios entre disitntas colaboraciones.
+
+Los commits son puntos de guardado que registran cambios específicos realizados en el proyecto 
+Cada commit contiene información sobre qué archivos fueron modificados y permite regresar a versiones anteriores si ocurre algún error.
+
+Las ramas (branches) permiten crear líneas de desarrollo independientes dentro del mismo proyecto 
+permitiendo trabajar en nuevas funciones o corregir errores sin afectar la versión principal del sistema. Posteriormente, las ramas pueden combinarse nuevamente mediante merge.
+
+El comando push se utiliza para enviar los cambios realizados en el repositorio local hacia un repositorio remoto, como GitHub
+Esto permite compartir el trabajo con otros desarrolladores y mantener respaldado el proyecto.
+
+- ¿Qué es GitHub y cómo se hace un fork de un repositorio?
+GitHub es una plataforma basada en la nube utilizada para almacenar y administrar repositorios Git
+Permite colaborar en proyectos, compartir código y administrar versiones; ademas de ser una plataforma muy importante para la publicacion de software de codigo abierto
+Un fork es una copia de un repositorio creada dentro de la cuenta de otro usuario en GitHub, para modificar o experimentar con un proyecto sin afectar el repositorio original.
+Para crearlo desde la plataforma web de GitHub, entrando a la pagina de un reporsitorio, existe un boton llamado Fork, 
+Tras seleccionarlo se crea una copia de repositorio en tu cuemta, y te permite hacer algunas configjuraciones, como mantenerla oculta o cambiar el nombre
+Despues de ello desde la computadora, en la terminal o GitHub Desktop, se puede usar git clone para copiar el contenido del repositorio a una carpeta local
+
+
+- ¿Qué es CI/CD (Continuous Integration / Continuous Deployment)?
+
+CI/CD es un conjunto de prácticas utilizadas para automatizar el proceso de integración, prueba y despliegue de aplicaciones. CI significa Continuous Integration (Integración Continua) 
+Consiste en verificar automáticamente los cambios realizados en el código cada vez que un desarrollador sube modificaciones al repositorio
+Esto permite detectar errores rápidamente y asegurar que el proyecto siga funcionando correctamente.
+
+- ¿Cómo funcionan los GitHub Actions workflows (.yml)?
+- Busca: "github actions deploy docker container on push tutorial"
+
+
+
+
+4. Stack de observabilidad
+
+El objetivo es tener visibilidad de lo que está pasando en tu servidor: cuánta CPU y memoria está usando, y qué peticiones HTTP están llegando o fallando.
+
+Qué investigar:
+- ¿Qué es Prometheus y qué es Node Exporter?
+- ¿Qué es Grafana y cómo se conecta a Prometheus?
+- ¿Cómo se recolectan logs de Nginx con Loki o con ELK?
+- Busca: "grafana prometheus node exporter docker-compose tutorial"
+- Busca: "nginx access logs grafana loki"
+
+
+A. Dominio personalizado + HTTPS
+
+Registra un dominio gratuito (DuckDNS es una buena opción) y apúntalo a la IP pública de tu VM. Luego configura HTTPS con un certificado gratuito de Let's Encrypt.
+
+Qué investigar:
+- ¿Qué es DNS y cómo funciona la resolución de nombres?
+- ¿Cómo registrar un subdominio gratuito en duckdns.org?
+- ¿Qué es Let's Encrypt y cómo se usa Certbot con Nginx?
+- Busca: "certbot nginx letsencrypt ubuntu tutorial"
+
+ENTREGABLES
+
+Haz un fork del repositorio en GitHub y trabaja en tu propio fork público. 
+Al terminar, compárteme la URL. 
+Tu repositorio debe incluir todos los archivos de configuración que hayas creado, un README.md con instrucciones para reproducir tu setup desde cero en una VM limpia, y capturas de pantalla de tus dashboards de monitoreo.

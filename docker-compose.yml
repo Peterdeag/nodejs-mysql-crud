@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+
+  app:
+    build: .
+    container_name: node-app
+
+    ports:
+      - "3000:3000"
+
+    depends_on:
+      - paystand-mysql
+
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+
+  paystand-mysql:
+    image: mysql:5.7
+
+    container_name: paystand-mysql
+
+    restart: always
+
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+
+    ports:
+      - "3306:3306"
+
+        
+    volumes:
+      - ./database:/docker-entrypoint-initdb.d

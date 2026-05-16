@@ -1,5 +1,5 @@
 -- to create a new database
-CREATE DATABASE nodejs2;
+-- CREATE DATABASE nodejs2;
 
 -- to use database
 use nodejs2;
@@ -13,7 +13,7 @@ CREATE TABLE customer (
 );
 
 -- to show all tables
-show tables;
+-- show tables;
 
 -- to describe table
-describe customer;
+-- describe customer;
