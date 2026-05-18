@@ -85,6 +85,7 @@ Las variables se asignan desde un archivo de configuracion .env,
 y en el codigo solo se necesita agregar referencias
 
 https://docs.docker.com/reference/compose-file/services/
+https://medium.com/jungletronics/docker-mysql-node-js-app-88f696d837bb
 
 Busca: "dockerize node.js mysql app docker-compose example"
 
@@ -219,9 +220,23 @@ https://docs.github.com/es/actions/concepts/workflows-and-actions/workflows
 https://github.com/marketplace/actions/build-and-push-docker-images
 https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax.com
 
-
 Ejemplos:
 https://youtu.be/YLtlz88zrLg?si=9H2uLUQRUvlu23Mg
+
+
+
+
+Deploy:
+Para la implmentacion del Continuous Deploy de la imagen docker en un servidor, existen algunas herramiendas dedicadas a esta funcionalidad
+pero algunas fuentes recomiendan una solucion alternativa mas elemental, utilizando un llamado ssh para indicar al servidor que cargue la nueva version al momento de hacer cambios
+Esto requiere definir en el workflow, que se guarden cambios en un repositorio de Docker Hub, que se manejen claves de acceso para esta plataforma, asi como llaves para conectarse con ssh al servidor
+Estos se definen mediante Github secrets, lo que permite guardarlas, de modo que github las conozca y pueda aplicarlas, pero se mantengan ocultas a otros usuarios
+
+Segui el siguiente tutorial para la implementacion:
+https://medium.com/@yogeshkolhatkar/automating-docker-deployments-with-github-actions-e73250435828
+
+
+
 
 
 4. Stack de observabilidad

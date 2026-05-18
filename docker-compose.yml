@@ -1,8 +1,6 @@
 #version: '3.8'
 
 services:
-
-
   nginx:
     image: nginx:alpine
     container_name: nginx-proxy
@@ -17,7 +15,7 @@ services:
       - app
 
   app:
-    build: .
+    image: peterdeag/nodejs-mysql-crud:latest
     container_name: node-app
 
     expose:
@@ -46,6 +44,5 @@ services:
     ports:
       - "3306:3306"
 
-        
     volumes:
       - ./database:/docker-entrypoint-initdb.d

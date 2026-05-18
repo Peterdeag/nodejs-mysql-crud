@@ -39,7 +39,7 @@ sudo apt install docker.io -y
 Instalar Docker Compose:
 
 ```bash
-sudo apt install docker-compose-v2 -y
+sudo apt install docker-compose -y
 ```
 
 Verificar instalaciones:
