@@ -27,7 +27,7 @@ jobs:
       
       - name: Push the Docker image
 
-          run: docker push ${{ secrets.DOCKER_USERNAME }}/nodejs-mysql-crud:latest
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/nodejs-mysql-crud:latest
       
       - name: Deploy to Remote Server
         uses: appleboy/ssh-action@v0.1.6
