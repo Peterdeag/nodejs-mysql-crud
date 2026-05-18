@@ -2,12 +2,26 @@
 
 services:
 
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx-proxy
+
+    ports:
+      - "80:80"
+
+    volumes:
+      - ./nginx/nodeapp.conf:/etc/nginx/conf.d/default.conf
+
+    depends_on:
+      - app
+
   app:
     build: .
     container_name: node-app
 
-    ports:
-      - "3000:3000"
+    expose:
+      - "3000"
 
     depends_on:
       - paystand-mysql

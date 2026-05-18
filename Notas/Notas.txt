@@ -112,6 +112,17 @@ sudo apt install nginx
 Enlaces de descarga y guia completa de instalacion:
 https://nginx.org/en/linux_packages.html
 
+
+(Correccion:
+Funciona para instalarlo en linux de manera general, pero para el callenge descubri que es mas correcto imlementarlo dentro de la imagen docker como servicio
+Se agrega a servicios con las configraciones requeridas, indicando que tendra acceso al puerto 80, se configura que nodejs ya no tenga el puerto 3000 expuesto, si no que solo
+dentro del espacio de docker, y se agrega un volumen con el archivo de configuracion de nodeapp dentro de nginx
+
+https://medium.com/@a_farag/deploying-a-node-js-project-with-docker-and-nginx-1bb5a05bc439
+)
+
+
+
 - ¿Cómo se configura un "server block" en Nginx para redirigir tráfico a otro puerto?
 En server block indica cómo debe responder el servidor ante las solicitudes que llegan a un puerto o dominio específico
 Se crea un archivo de configuración dentro de /etc/nginx/sites-available/, donde se define que Nginx escuche en el puerto 80 
@@ -156,18 +167,61 @@ Despues de ello desde la computadora, en la terminal o GitHub Desktop, se puede 
 
 - ¿Qué es CI/CD (Continuous Integration / Continuous Deployment)?
 
-CI/CD es un conjunto de prácticas utilizadas para automatizar el proceso de integración, prueba y despliegue de aplicaciones. CI significa Continuous Integration (Integración Continua) 
+CI/CD es un conjunto de prácticas utilizadas para automatizar el proceso de integración, 
+prueba y despliegue de aplicaciones. CI significa Continuous Integration (Integración Continua) 
 Consiste en verificar automáticamente los cambios realizados en el código cada vez que un desarrollador sube modificaciones al repositorio
 Esto permite detectar errores rápidamente y asegurar que el proyecto siga funcionando correctamente.
+CI: Integracion Continua
+Consiste en verificar automáticamente los cambios realizados en el código cada vez que un desarrollador sube modificaciones al repositorio. 
+Esto permite detectar errores rápidamente y asegurar que el proyecto siga funcionando correctamente.
+
+CD: Despligue Dontinuo
+Consiste en desplegar automáticamente una aplicación después de que los cambios fueron validados correctamente. 
+Esto reduce el trabajo manual y permite que una nueva versión del proyecto pueda publicarse de forma más rápida y controlada.
 
 - ¿Cómo funcionan los GitHub Actions workflows (.yml)?
+
+Se configuran los procesos que se van a automatizar con disintos parametros de inicio y de ejecucion
+Se define que evento activara el workflow, como hacer un push, o crear un pull request, 
+Despues se definen las tareas que se realizan, llamados jobs (trabajos), como puregas, compilacion, y despliegue
+Si un trabajo tiene requiere varias tareas, se utilizan steps, que son las tareas mas generales, como ejecutar comandos, o usar una accion preconfigurada
+Se utilizan tambien espacios virtuales, llamados runners, que ejecutan el codigo en un servidor virtual de Github. Se debe de configurar para que OS va a correr
+
+
+Para crear los workflows, al momento de tener un repositorio, GitHub te da plantillas o flujos preexistente, disponibles desde la pestaña actions
+Fuera de ello, se pueden definir y configurar manualmente con mas precision en un archivo YAML
+Se define el nombre con 
+name: Docker Image CI
+
+El evento que genera la ejecucion con 
+on: [push] 
+(se pueden definir tambien varios eventos, y especificar si ejecutarlo solo al haber eventos en una rama especifica)
+
+Y los trabajos que se realizan con
+job:
+  build::
+
+Dentro de cada jobs se define en donde va a correr
+    runs-on: ubuntu-latest
+
+Y los pasos que va a seguir
+    steps:
+    - uses: actions/checkout@v4
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+
+
 - Busca: "github actions deploy docker container on push tutorial"
 
+Documentacion
 https://github.com/features/actions
+https://docs.github.com/es/actions/concepts/workflows-and-actions/workflows
 https://github.com/marketplace/actions/build-and-push-docker-images
-https://youtu.be/YLtlz88zrLg?si=9H2uLUQRUvlu23Mg
+https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax.com
 
-https://medium.com/@yogeshkolhatkar/automating-docker-deployments-with-github-actions-e73250435828
+
+Ejemplos:
+https://youtu.be/YLtlz88zrLg?si=9H2uLUQRUvlu23Mg
 
 
 4. Stack de observabilidad
