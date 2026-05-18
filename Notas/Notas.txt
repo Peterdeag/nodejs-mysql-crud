@@ -24,6 +24,9 @@ Se ejecuta el comando:
 docker build -t [image name] [directory]
 y se puede añadir un punto para indicar que se construira con la carpeta actual
 
+(Recordatorio: Utilizar una version ligera de Node en el dockerfile, recomendablemente -alpine)
+https://es.stackoverflow.com/questions/627674/docker-tarda-mucho-en-instalar-dependencias-nodejs-en-un-servidor
+
 ¿Qué es docker-compose y cómo se definen múltiples servicios?
 Docker compose es la herramienta para definir y correr aplicaciones multicontenedor
 Utiliza un archivo docker-compose.yml
@@ -160,7 +163,11 @@ Esto permite detectar errores rápidamente y asegurar que el proyecto siga funci
 - ¿Cómo funcionan los GitHub Actions workflows (.yml)?
 - Busca: "github actions deploy docker container on push tutorial"
 
+https://github.com/features/actions
+https://github.com/marketplace/actions/build-and-push-docker-images
+https://youtu.be/YLtlz88zrLg?si=9H2uLUQRUvlu23Mg
 
+https://medium.com/@yogeshkolhatkar/automating-docker-deployments-with-github-actions-e73250435828
 
 
 4. Stack de observabilidad
